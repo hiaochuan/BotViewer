@@ -1,17 +1,28 @@
 // User Types
+export interface KOLTrackItem {
+    name: string
+    is_reverse: boolean
+    is_active: boolean
+    futures: string[]
+    amount_mode: string
+    fixed_amounts: Record<string, number>
+    percentages: Record<string, number>
+    max_loss: number | null
+}
+
 export interface User {
+    id: number
     username: string
+    activate: boolean
     gate_api_key: string
-    gate_secret_key: string
-    trade_mode: 'REAL' | 'SIMULATED'
     enable_balance_monitor: boolean
-    init_balance?: number
-    balance_rate?: number
-    min_balance?: number
-    exporter_name?: string
-    status?: 'running' | 'stopped'
-    monitor_status?: 'running' | 'stopped'
-    exporter_status?: 'running' | 'stopped'
+    enable_exporter: boolean
+    is_running: boolean
+    is_monitoring: boolean
+    balance_rate: number | null
+    min_balance: number | null
+    init_balance: number | null
+    followed_kols: KOLTrackItem[]
 }
 
 export interface UserFormData {
@@ -28,11 +39,13 @@ export interface UserFormData {
 
 // KOL Types
 export interface KOL {
+    id: number
     name: string
+    source_type: string
     kol_type: 'NORMAL' | 'WWG'
     dc_channel_id: number
     dc_author_ids: number[]
-    status?: 'active' | 'inactive'
+    followed_by: string[]
 }
 
 export interface KOLFormData {

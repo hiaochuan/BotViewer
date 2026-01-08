@@ -5,23 +5,28 @@ import {
     Play,
     Square,
     Trash2,
-    Edit,
     RefreshCw,
     Activity,
-    Upload,
     X,
 } from 'lucide-react'
 import api from '../services/api'
-import type { User, UserFormData } from '../types'
+import type { UserFormData } from '../types'
 
 function UserManagement() {
     const [showAddModal, setShowAddModal] = useState(false)
-    const [editingUser, setEditingUser] = useState<User | null>(null)
     const queryClient = useQueryClient()
 
     const { data: users = [], isLoading, refetch } = useQuery({
         queryKey: ['users'],
-        queryFn: () => api.getUsers(),
+        queryFn: async () => {
+            try {
+                const result = await api.getUsers()
+                return result?.users || []
+            } catch (error) {
+                console.error('Failed to fetch users:', error)
+                return []
+            }
+        },
         refetchInterval: 5000,
     })
 
@@ -124,22 +129,16 @@ function UserManagement() {
                                         </h3>
                                         <span
                                             className={
-                                                user.status === 'running'
+                                                user.is_running
                                                     ? 'badge-success'
                                                     : 'badge-danger'
                                             }
                                         >
-                                            {user.status || 'stopped'}
+                                            {user.is_running ? 'running' : 'stopped'}
                                         </span>
-                                        <span
-                                            className={
-                                                user.trade_mode === 'REAL'
-                                                    ? 'badge-warning'
-                                                    : 'badge-info'
-                                            }
-                                        >
-                                            {user.trade_mode}
-                                        </span>
+                                        {user.activate && (
+                                            <span className="badge-info">Active</span>
+                                        )}
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 text-sm">
@@ -177,7 +176,7 @@ function UserManagement() {
                                 </div>
 
                                 <div className="flex flex-col gap-2 ml-4">
-                                    {user.status === 'running' ? (
+                                    {user.is_running ? (
                                         <button
                                             onClick={() => stopUserMutation.mutate(user.username)}
                                             className="btn-danger flex items-center text-sm"
@@ -199,7 +198,7 @@ function UserManagement() {
 
                                     {user.enable_balance_monitor && (
                                         <>
-                                            {user.monitor_status === 'running' ? (
+                                            {user.is_monitoring ? (
                                                 <button
                                                     onClick={() => stopMonitorMutation.mutate(user.username)}
                                                     className="btn-secondary flex items-center text-sm"

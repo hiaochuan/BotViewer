@@ -10,32 +10,52 @@ import {
     RotateCcw,
 } from 'lucide-react'
 import api from '../services/api'
-import type { TrackConfig, TrackConfigFormData, User, KOL } from '../types'
+import type { TrackConfigFormData, User, KOL } from '../types'
 
 function TrackManagement() {
     const [showAddModal, setShowAddModal] = useState(false)
     const queryClient = useQueryClient()
 
-    const { data: tracks = [], isLoading, refetch } = useQuery({
-        queryKey: ['tracks'],
-        queryFn: () => api.getTrackConfigs(),
-        refetchInterval: 5000,
-    })
-
-    const { data: users = [] } = useQuery({
+    const { data: users = [], isLoading } = useQuery({
         queryKey: ['users'],
-        queryFn: () => api.getUsers(),
+        queryFn: async () => {
+            const result = await api.getUsers()
+            return result?.users || []
+        },
+        refetchInterval: 5000,
     })
 
     const { data: kols = [] } = useQuery({
         queryKey: ['kols'],
-        queryFn: () => api.getKOLs(),
+        queryFn: async () => {
+            const result = await api.getKOLs()
+            return result?.kols || []
+        },
     })
+
+    // Extract all track configs from users
+    const tracks = users.flatMap(user =>
+        user.followed_kols.map(track => ({
+            username: user.username,
+            kol_name: track.name,
+            is_reverse: track.is_reverse,
+            is_active: track.is_active,
+            futures: track.futures,
+            amount_mode: track.amount_mode,
+            fixed_amounts: track.fixed_amounts,
+            percentages: track.percentages,
+            max_loss: track.max_loss,
+        }))
+    )
+
+    const refetch = () => {
+        queryClient.invalidateQueries({ queryKey: ['users'] })
+    }
 
     const addTrackMutation = useMutation({
         mutationFn: (data: TrackConfigFormData) => api.addTrackConfig(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracks'] })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
             setShowAddModal(false)
         },
     })
@@ -44,7 +64,7 @@ function TrackManagement() {
         mutationFn: ({ username, kolName }: { username: string; kolName: string }) =>
             api.removeTrackConfig(username, kolName),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracks'] })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
         },
     })
 
@@ -52,7 +72,7 @@ function TrackManagement() {
         mutationFn: ({ username, kolName }: { username: string; kolName: string }) =>
             api.startTrack(username, kolName),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracks'] })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
         },
     })
 
@@ -60,7 +80,7 @@ function TrackManagement() {
         mutationFn: ({ username, kolName }: { username: string; kolName: string }) =>
             api.stopTrack(username, kolName),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracks'] })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
         },
     })
 
@@ -68,7 +88,7 @@ function TrackManagement() {
         mutationFn: ({ username, kolName }: { username: string; kolName: string }) =>
             api.restartTrack(username, kolName),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracks'] })
+            queryClient.invalidateQueries({ queryKey: ['users'] })
         },
     })
 
@@ -139,12 +159,12 @@ function TrackManagement() {
                                             <div className="flex gap-2 mt-1">
                                                 <span
                                                     className={
-                                                        track.status === 'running'
+                                                        track.is_active
                                                             ? 'badge-success'
                                                             : 'badge-danger'
                                                     }
                                                 >
-                                                    {track.status || 'stopped'}
+                                                    {track.is_active ? 'active' : 'stopped'}
                                                 </span>
                                                 {track.is_reverse && (
                                                     <span className="badge-warning">REVERSE</span>
@@ -214,7 +234,7 @@ function TrackManagement() {
                                 </div>
 
                                 <div className="flex flex-col gap-2 ml-4">
-                                    {track.status === 'running' ? (
+                                    {track.is_active ? (
                                         <button
                                             onClick={() =>
                                                 stopTrackMutation.mutate({

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Trash2, RefreshCw, UserCircle } from 'lucide-react'
 import api from '../services/api'
-import type { KOL, KOLFormData } from '../types'
+import type { KOLFormData } from '../types'
 
 function KOLManagement() {
     const [showAddModal, setShowAddModal] = useState(false)
@@ -10,7 +10,10 @@ function KOLManagement() {
 
     const { data: kols = [], isLoading, refetch } = useQuery({
         queryKey: ['kols'],
-        queryFn: () => api.getKOLs(),
+        queryFn: async () => {
+            const result = await api.getKOLs()
+            return result?.kols || []
+        },
         refetchInterval: 5000,
     })
 
