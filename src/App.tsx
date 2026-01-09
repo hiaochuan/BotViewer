@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { LayoutDashboard, Users, UserCircle, TrendingUp, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, UserCircle, Settings } from 'lucide-react'
 import Dashboard from './components/Dashboard'
 import UserManagement from './components/UserManagement'
 import KOLManagement from './components/KOLManagement'
-import TrackManagement from './components/TrackManagement'
 import SettingsPanel from './components/SettingsPanel'
 
-type TabType = 'dashboard' | 'users' | 'kols' | 'tracks' | 'settings'
+type TabType = 'dashboard' | 'users' | 'kols' | 'settings'
 
 function App() {
     const [activeTab, setActiveTab] = useState<TabType>('dashboard')
@@ -15,7 +14,6 @@ function App() {
         { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
         { id: 'users' as TabType, label: 'Users', icon: Users },
         { id: 'kols' as TabType, label: 'KOLs', icon: UserCircle },
-        { id: 'tracks' as TabType, label: 'Tracks', icon: TrendingUp },
         { id: 'settings' as TabType, label: 'Settings', icon: Settings },
     ]
 
@@ -27,8 +25,6 @@ function App() {
                 return <UserManagement />
             case 'kols':
                 return <KOLManagement />
-            case 'tracks':
-                return <TrackManagement />
             case 'settings':
                 return <SettingsPanel />
             default:
@@ -51,8 +47,8 @@ function App() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${activeTab === tab.id
-                                    ? 'bg-primary-600 text-white shadow-lg'
-                                    : 'text-gray-400 hover:bg-dark-800 hover:text-gray-200'
+                                ? 'bg-primary-600 text-white shadow-lg'
+                                : 'text-gray-400 hover:bg-dark-800 hover:text-gray-200'
                                 }`}
                         >
                             <tab.icon className="w-5 h-5" />

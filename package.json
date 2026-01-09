@@ -5,7 +5,9 @@
     "main": "dist/main.js",
     "scripts": {
         "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+        "dev:no-hmr": "concurrently \"npm run dev:vite:no-hmr\" \"npm run dev:electron\"",
         "dev:vite": "vite",
+        "dev:vite:no-hmr": "cross-env NO_HMR=true vite",
         "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
         "build": "tsc -p electron/tsconfig.json && vite build && electron-builder",
         "build:vite": "vite build",

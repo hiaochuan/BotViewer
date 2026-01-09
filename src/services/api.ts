@@ -29,14 +29,21 @@ class FusionAPI {
     data?: any
     params?: any
   }): Promise<T> {
+    console.log('[API Request]', config.method.toUpperCase(), config.url, {
+      data: config.data,
+      params: config.params,
+    })
+
     if (this.useElectronAPI) {
       const result = await window.electronAPI.apiRequest(config)
+      console.log('[API Response]', config.url, result)
       if (!result.success) {
         throw new Error(result.error || 'API request failed')
       }
       return result.data
     } else {
       const response = await this.client.request<T>(config)
+      console.log('[API Response]', config.url, response.data)
       return response.data
     }
   }
