@@ -239,8 +239,8 @@ function UserManagement() {
                                             >
                                                 {user.is_running ? 'running' : 'stopped'}
                                             </span>
-                                            {user.activate && (
-                                                <span className="badge-info">Active</span>
+                                            {user.is_monitoring && (
+                                                <span className="badge-info">monitoring</span>
                                             )}
                                             {user.followed_kols.length > 0 && (
                                                 <span className="badge-warning">
@@ -304,7 +304,7 @@ function UserManagement() {
                                             </button>
                                         )}
 
-                                        {user.enable_balance_monitor && (
+                                        {user.is_running && (
                                             <>
                                                 {user.is_monitoring ? (
                                                     <button
@@ -322,7 +322,7 @@ function UserManagement() {
                                                         disabled={runMonitorMutation.isPending}
                                                     >
                                                         <Activity className="w-3 h-3 mr-1" />
-                                                        Run Monitor
+                                                        Start Monitor
                                                     </button>
                                                 )}
                                             </>
