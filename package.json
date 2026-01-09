@@ -7,9 +7,12 @@
         "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
         "dev:vite": "vite",
         "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
-        "build": "tsc && vite build && electron-builder",
-        "build:vite": "tsc && vite build",
-        "build:electron": "electron-builder",
+        "build": "tsc -p electron/tsconfig.json && vite build && electron-builder",
+        "build:vite": "vite build",
+        "build:electron": "tsc -p electron/tsconfig.json && electron-builder",
+        "build:mac:arm64": "tsc -p electron/tsconfig.json && vite build && electron-builder --mac --arch=arm64",
+        "build:mac:x64": "tsc -p electron/tsconfig.json && vite build && electron-builder --mac --arch=x64",
+        "build:mac:universal": "tsc -p electron/tsconfig.json && vite build && electron-builder --mac --arch=universal",
         "preview": "vite preview",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
     },
@@ -63,12 +66,12 @@
         },
         "files": [
             "dist/**/*",
+            "node_modules/**/*",
             "package.json"
         ],
         "mac": {
             "category": "public.app-category.finance",
             "target": [
-                "dmg",
                 "zip"
             ]
         },
