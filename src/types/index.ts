@@ -43,16 +43,16 @@ export interface KOL {
     name: string
     source_type: string
     kol_type: 'NORMAL' | 'WWG'
-    dc_channel_id: number
-    dc_author_ids: number[]
+    dc_channel_id: string
+    dc_author_ids: string[]
     followed_by: string[]
 }
 
 export interface KOLFormData {
     name: string
     kol_type: 'NORMAL' | 'WWG'
-    dc_channel_id: number
-    dc_author_ids: number[]
+    dc_channel_id: string
+    dc_author_ids: string[]
 }
 
 // Track Config Types

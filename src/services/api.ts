@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
+import JSONbig from 'json-bigint'
 import type {
   User,
   UserFormData,
@@ -7,6 +8,9 @@ import type {
   TrackConfigFormData,
   ApiResponse,
 } from '../types'
+
+// Configure json-bigint to convert big integers to strings
+const JSONbigString = JSONbig({ storeAsString: true })
 
 class FusionAPI {
   private client: AxiosInstance
@@ -20,6 +24,17 @@ class FusionAPI {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Use json-bigint to parse responses and preserve large integers as strings
+      transformResponse: [function (data) {
+        if (typeof data === 'string') {
+          try {
+            return JSONbigString.parse(data)
+          } catch (e) {
+            return data
+          }
+        }
+        return data
+      }]
     })
   }
 

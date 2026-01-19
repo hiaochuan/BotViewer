@@ -1,6 +1,10 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 import axios from 'axios'
+import JSONbig from 'json-bigint'
+
+// Configure json-bigint to convert big integers to strings
+const JSONbigString = JSONbig({ storeAsString: true })
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -74,8 +78,13 @@ ipcMain.handle('api-request', async (event, { method, url, data, params }) => {
         'Content-Type': 'application/json',
       },
       timeout: 10000,
+      // Keep response as raw string to manually parse with json-bigint
+      transformResponse: [(data) => data]
     })
-    return { success: true, data: response.data }
+
+    // Parse with json-bigint to preserve large integers as strings
+    const parsed = JSONbigString.parse(response.data)
+    return { success: true, data: parsed }
   } catch (error: any) {
     return {
       success: false,

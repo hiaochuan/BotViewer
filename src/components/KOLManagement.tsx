@@ -138,7 +138,7 @@ function AddKOLModal({ onClose, onSubmit, isLoading }: AddKOLModalProps) {
     const [formData, setFormData] = useState<KOLFormData>({
         name: '',
         kol_type: 'NORMAL',
-        dc_channel_id: 0,
+        dc_channel_id: '',
         dc_author_ids: [],
     })
     const [authorIdInput, setAuthorIdInput] = useState('')
@@ -149,7 +149,7 @@ function AddKOLModal({ onClose, onSubmit, isLoading }: AddKOLModalProps) {
     }
 
     const handleAddAuthorId = () => {
-        const id = parseInt(authorIdInput.trim())
+        const id = authorIdInput.trim()
         if (id && !formData.dc_author_ids.includes(id)) {
             setFormData({
                 ...formData,
@@ -159,7 +159,7 @@ function AddKOLModal({ onClose, onSubmit, isLoading }: AddKOLModalProps) {
         }
     }
 
-    const handleRemoveAuthorId = (id: number) => {
+    const handleRemoveAuthorId = (id: string) => {
         setFormData({
             ...formData,
             dc_author_ids: formData.dc_author_ids.filter((aid) => aid !== id),
@@ -208,13 +208,13 @@ function AddKOLModal({ onClose, onSubmit, isLoading }: AddKOLModalProps) {
                             Discord Channel ID *
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             className="input"
-                            value={formData.dc_channel_id || ''}
+                            value={formData.dc_channel_id}
                             onChange={(e) =>
                                 setFormData({
                                     ...formData,
-                                    dc_channel_id: parseInt(e.target.value) || 0,
+                                    dc_channel_id: e.target.value,
                                 })
                             }
                             required
@@ -227,7 +227,7 @@ function AddKOLModal({ onClose, onSubmit, isLoading }: AddKOLModalProps) {
                         </label>
                         <div className="flex gap-2 mb-2">
                             <input
-                                type="number"
+                                type="text"
                                 className="input flex-1"
                                 value={authorIdInput}
                                 onChange={(e) => setAuthorIdInput(e.target.value)}
